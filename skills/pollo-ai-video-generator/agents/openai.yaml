@@ -1,0 +1,7 @@
+interface:
+  display_name: "Pollo AI Video Generator"
+  short_description: "Generate videos with Pollo AI models and credit checks"
+  default_prompt: "Use $pollo-ai-video-generator to generate an AI video, pick a suitable Pollo model, or check my available credits."
+
+policy:
+  allow_implicit_invocation: true
