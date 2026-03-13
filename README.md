@@ -50,7 +50,7 @@ Generate AI videos through the [Pollo AI API](https://pollo.ai/api-platform) wit
 ## Prerequisites
 
 1. Get your API key at [pollo.ai/api-platform/keys](https://pollo.ai/api-platform/keys)
-2. Provide the key when the skill prompts you — it's stored for the session only
+2. Provide the key when the skill prompts you — it's stored locally so you only need to do this once
 
 ## License
 
