@@ -3,8 +3,7 @@
 Interactive setup for Pollo AI API key.
 
 Usage:
-    python3 pollo_setup.py              # interactive prompt
-    python3 pollo_setup.py --key <key>  # non-interactive
+    python3 pollo_setup.py
 
 Creates ~/.pollo/config.toml with validated API credentials.
 """
@@ -75,7 +74,6 @@ base_url = "{base_url}"
 
 def main():
     parser = argparse.ArgumentParser(description="Set up Pollo AI API key")
-    parser.add_argument("--key", help="API key (non-interactive mode)")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Base URL override")
     args = parser.parse_args()
 
@@ -92,18 +90,14 @@ def main():
         except Exception:
             print("  (could not read existing config)")
 
-        if not args.key:
-            answer = input("\nUpdate config? [y/N] ").strip().lower()
-            if answer != "y":
-                print("Keeping existing config.")
-                return
+        answer = input("\nUpdate config? [y/N] ").strip().lower()
+        if answer != "y":
+            print("Keeping existing config.")
+            return
 
-    # Get API key
-    if args.key:
-        api_key = args.key.strip()
-    else:
-        print("Get your API key at: https://pollo.ai/api-platform/keys\n")
-        api_key = input("Enter your API key: ").strip()
+    # Get API key interactively
+    print("Get your API key at: https://pollo.ai/api-platform/keys\n")
+    api_key = input("Enter your API key: ").strip()
 
     if not api_key:
         print("Error: No API key provided.")

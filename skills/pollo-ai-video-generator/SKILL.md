@@ -40,13 +40,17 @@ Store the API key locally in `~/.pollo/config.toml`. After setup, do not show it
 
 **Important:** Do not ask the user to run scripts or commands. All script execution is done by the AI. If setup is needed, ask the user to create a key on the website and paste it into the chat.
 
+**Security rule:** Never include the API key in any bash command or script argument. Always use the Write tool to create config files containing credentials.
+
+The API key can also be provided via the `POLLO_API_KEY` environment variable, which takes priority over the config file. If set, skip config file setup entirely.
+
 ### Check if already configured
 
 ```bash
 python3 scripts/pollo_config.py
 ```
 
-If this prints the config summary, the key is already set up. Skip to Key Validation.
+If this prints the config summary (from env var or config file), the key is already set up. Skip to Key Validation.
 
 ### New setup
 
@@ -67,15 +71,23 @@ If config is not found (exit code 2 or error), follow this flow:
 
 2. **Wait for the user to paste the key.** Do NOT proceed until the user provides it.
 
-3. **AI runs the setup script** with the key the user provided:
+3. **Write the config file directly** using the Write tool (NOT a bash command):
 
-   ```bash
-   python3 scripts/pollo_setup.py --key <the-key-user-pasted>
+   Write the following content to `~/.pollo/config.toml`:
+
+   ```toml
+   [api]
+   key = "<the-key-user-pasted>"
+   base_url = "https://pollo.ai/api/platform"
    ```
 
-   This validates the key against the API and writes `~/.pollo/config.toml`.
+4. **Validate the key** by checking credit balance:
 
-4. **Report the result** in user-friendly language:
+   ```bash
+   python3 scripts/pollo_api.py GET /credit/balance
+   ```
+
+5. **Report the result** in user-friendly language:
    - Success → "Setup is complete. You have X credits available. Send me a prompt whenever you are ready."
    - Invalid key → "That key does not appear to be valid. Please copy a new key from https://pollo.ai/api-platform/keys and paste it here."
    - Network error → "I couldn't reach the API right now. Please try again in a moment."

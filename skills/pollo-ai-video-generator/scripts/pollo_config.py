@@ -6,6 +6,7 @@ Reads API key and base URL from ~/.pollo/config.toml.
 Uses a minimal TOML parser — no external dependencies.
 """
 
+import os
 import re
 import sys
 from pathlib import Path
@@ -46,7 +47,14 @@ def parse_toml_simple(text: str) -> dict:
 
 
 def load_config() -> dict:
-    """Load config from ~/.pollo/config.toml. Returns dict with api_key and base_url."""
+    """Load config from env vars or ~/.pollo/config.toml. Returns dict with api_key and base_url."""
+    # Priority 1: Environment variable
+    env_key = os.environ.get("POLLO_API_KEY", "").strip()
+    if env_key:
+        base_url = os.environ.get("POLLO_BASE_URL", DEFAULT_BASE_URL).strip()
+        return {"api_key": env_key, "base_url": base_url, "source": "env"}
+
+    # Priority 2: Config file
     if not CONFIG_PATH.exists():
         raise FileNotFoundError(
             f"Config not found at {CONFIG_PATH}\n"
@@ -77,7 +85,11 @@ def get_api_key() -> str:
 if __name__ == "__main__":
     try:
         config = load_config()
-        print(f"Config loaded from {CONFIG_PATH}")
+        source = config.get("source", "file")
+        if source == "env":
+            print("Config loaded from environment variable POLLO_API_KEY")
+        else:
+            print(f"Config loaded from {CONFIG_PATH}")
         print(f"  base_url: {config['base_url']}")
         print(f"  api_key:  {config['api_key'][:8]}...{config['api_key'][-4:]}")
     except (FileNotFoundError, ValueError) as e:
